@@ -1366,7 +1366,7 @@ p {
 [data-theme="dark"] .price,
 [data-theme="dark"] .product-rating,
 [data-theme="dark"] .rating {
-  color: #ffffff;
+  color: #000000;
 }
 
 [data-theme="dark"] .nav-links a {
