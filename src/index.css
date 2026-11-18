@@ -1378,3 +1378,60 @@ a {
 [data-theme="dark"] .search-container input:focus {
   border-color: #0095f6;
 }
+
+/* ===== TOMBOL KOSONGKAN KERANJANG (CLEAR CART) ===== */
+.page-header button,
+.cart-header button,
+.catalog-header > button,
+.clear-cart-btn,
+.clear-btn,
+.danger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.page-header button:hover:not(:disabled),
+.cart-header button:hover:not(:disabled),
+.catalog-header > button:hover:not(:disabled),
+.clear-cart-btn:hover:not(:disabled),
+.clear-btn:hover:not(:disabled),
+.danger-btn:hover:not(:disabled) {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+}
+
+/* Dark Mode untuk Tombol Kosongkan Keranjang & Hapus Item */
+[data-theme="dark"] .page-header button,
+[data-theme="dark"] .cart-header button,
+[data-theme="dark"] .catalog-header > button,
+[data-theme="dark"] .clear-cart-btn,
+[data-theme="dark"] .clear-btn,
+[data-theme="dark"] .danger-btn,
+[data-theme="dark"] .remove-btn {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+[data-theme="dark"] .page-header button:hover:not(:disabled),
+[data-theme="dark"] .cart-header button:hover:not(:disabled),
+[data-theme="dark"] .catalog-header > button:hover:not(:disabled),
+[data-theme="dark"] .clear-cart-btn:hover:not(:disabled),
+[data-theme="dark"] .clear-btn:hover:not(:disabled),
+[data-theme="dark"] .danger-btn:hover:not(:disabled),
+[data-theme="dark"] .remove-btn:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.22);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
