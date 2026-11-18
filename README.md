@@ -1,6 +1,6 @@
 # TALENAVI STORE — Product Catalog
 
-Aplikasi web katalog produk e-commerce responsif yang dibangun menggunakan **React.js** dan **Vite** untuk **Frontend Developer Technical Test — PT Dynamic Talenta Navigator (Talenavi)**. Aplikasi ini mengambil data secara dinamis dari DummyJSON REST API serta dilengkapi manajemen keranjang belanja dan wishlist secara persisten di sisi klien.
+Aplikasi web katalog produk e-commerce responsif yang dibangun menggunakan **React.js** dan **Vite** untuk **Frontend Developer Technical Test — PT Dynamic Talenta Navigator (Talenavi)**. Aplikasi ini mengambil data secara dinamis dari DummyJSON REST API serta dilengkapi manajemen autentikasi, keranjang belanja, dan wishlist secara persisten di sisi klien.
 
 🔗 **Live Demo:** [https://talenavi-product-catalog.vercel.app](https://talenavi-product-catalog.vercel.app)
 
@@ -10,12 +10,13 @@ Aplikasi web katalog produk e-commerce responsif yang dibangun menggunakan **Rea
 
 - **Katalog Produk & Pagination:** Menampilkan 12 produk per halaman menggunakan parameter `limit` dan `skip` dengan navigasi nomor halaman dinamis.
 - **Pencarian Real-Time (Debounced):** Pencarian produk berdasarkan kata kunci yang dioptimalkan dengan *custom hook* `useDebounce` (400 ms) untuk mencegah pemanggilan API berulang saat mengetik.
-- **Filter Kategori & Sorting:** Penyaringan daftar produk berdasarkan kategori dari API serta pengurutan (*sorting*) berdasarkan **Harga** (terendah/tertinggi) dan **Rating**.
+- **Filter Kategori & Sorting:** Penyaringan daftar produk berdasarkan kategori dari API (`/products/categories`) serta pengurutan (*sorting*) berdasarkan **Harga** (terendah/tertinggi) dan **Rating**.
 - **Detail Produk (`/products/:id`):** Menampilkan galeri gambar interaktif, merek, rating, ketersediaan stok, diskon, pengaturan jumlah pembelian, serta daftar ulasan pelanggan (**Customer Reviews**).
+- **Autentikasi & Protected Route (`/login`):** Halaman login yang terintegrasi dengan DummyJSON Auth API (`POST /auth/login`) untuk memproteksi akses menuju halaman keranjang belanja (`/cart`).
 - **Wishlist (`/wishlist`):** Menyimpan dan mengelola daftar produk favorit pengguna.
-- **Keranjang Belanja (`/cart`):** Mengubah jumlah item (`+`/`-`) dengan **validasi batas maksimal stok** dari API, menghapus produk, menghitung subtotal dan total harga otomatis, serta simulasi *checkout*.
-- **Penyimpanan Persisten:** Data keranjang dan wishlist tersimpan otomatis ke `localStorage` sehingga tetap aman meskipun halaman di-*refresh*.
-- **Penanganan State & Responsive UI:** Dilengkapi indikator *loading*, pesan data kosong (*empty state*), penanganan *error* dengan tombol **Coba Lagi**, serta tata letak responsif untuk Mobile (1–2 kolom + *hamburger menu*), Tablet (3 kolom), dan Desktop (4 kolom).
+- **Keranjang Belanja (`/cart`):** Mengubah jumlah item (`+`/`-`) dengan **validasi batas maksimal stok** dari API, menghapus produk, mengosongkan keranjang, menghitung subtotal dan total harga otomatis, serta simulasi *checkout*.
+- **Penyimpanan Persisten:** Data sesi login, keranjang, wishlist, dan preferensi tema tersimpan otomatis ke `localStorage` sehingga tetap aman meskipun halaman di-*refresh*.
+- **Dark Mode & Responsive UI:** Mendukung peralihan **Light Mode** dan **Dark Mode**, indikator *loading*, pesan data kosong (*empty state*), penanganan *error* dengan tombol **Coba Lagi**, serta tata letak responsif untuk Mobile (1–2 kolom + *hamburger menu*), Tablet (3 kolom), dan Desktop (4 kolom).
 
 ---
 
@@ -25,17 +26,18 @@ Aplikasi web katalog produk e-commerce responsif yang dibangun menggunakan **Rea
 - **Routing:** React Router DOM v7
 - **Icons:** Lucide React
 - **State Management:** React Context API + `localStorage`
-- **API:** DummyJSON Products API
-- **Styling:** Vanilla CSS (Responsive CSS Grid & Flexbox)
+- **API:** DummyJSON Products & Auth REST API
+- **Testing:** Vitest & React Testing Library
+- **Styling:** Vanilla CSS (Responsive CSS Grid, Flexbox & Dark Theme)
 
 ---
 
 ## Alasan Pemilihan State Management
 
-Aplikasi ini menggunakan **React Context API** yang dikombinasikan dengan **`localStorage`** (`ShopContext`) untuk mengelola *state* **Cart (Keranjang)** dan **Wishlist (Favorit)** karena:
+Aplikasi ini menggunakan **React Context API** yang dikombinasikan dengan **`localStorage`** (`ShopContext`) untuk mengelola *state* **Auth (Login)**, **Cart (Keranjang)**, **Wishlist (Favorit)**, dan **Theme (Dark/Light Mode)** karena:
 
-1. **Sesuai dengan Skala & Kompleksitas Aplikasi:** Kebutuhan *global state* berfokus pada sinkronisasi jumlah item di Navbar, halaman katalog, halaman detail produk, wishlist, dan keranjang. React Context API sudah sangat memadai tanpa menambah ukuran *bundle* dari *library* eksternal seperti Redux.
-2. **Persistensi Data Sisi Klien:** Karena endpoint `POST/PUT/DELETE` pada DummyJSON hanya bersifat simulasi (tidak tersimpan permanen di server), sinkronisasi otomatis dengan `localStorage` memastikan data belanja dan produk favorit pengguna tetap bertahan setelah halaman di-*refresh*.
+1. **Sesuai dengan Skala & Kompleksitas Aplikasi:** Kebutuhan *global state* berfokus pada sinkronisasi status login, jumlah item di Navbar, halaman katalog, halaman detail produk, wishlist, dan keranjang. React Context API sudah sangat memadai tanpa menambah ukuran *bundle* dari *library* eksternal seperti Redux.
+2. **Persistensi Data Sisi Klien:** Karena endpoint `POST/PUT/DELETE` pada DummyJSON hanya bersifat simulasi (tidak tersimpan permanen di server), sinkronisasi otomatis dengan `localStorage` memastikan data belanja, produk favorit, dan sesi pengguna tetap bertahan setelah halaman di-*refresh*.
 3. **Validasi Stok Terpusat:** Seluruh logika penambahan maupun perubahan kuantitas item dikontrol di satu tempat (`ShopContext`), sehingga pembatasan jumlah pembelian agar tidak melebihi stok produk dari API berjalan konsisten di seluruh halaman.
 
 ---
@@ -43,41 +45,57 @@ Aplikasi ini menggunakan **React Context API** yang dikombinasikan dengan **`loc
 ## Struktur Folder
 
 text
+public/
+└── screenshots/     # Dokumentasi tampilan Desktop & Mobile
 src/
 ├── assets/          # Aset statis aplikasi
-├── components/      # Komponen UI reusable (Navbar, SearchBar, ProductCard, Pagination)
-├── context/         # Global state management untuk Cart & Wishlist (ShopContext)
+├── components/      # Komponen UI reusable (Navbar, SearchBar, ProductCard, Pagination, ProtectedRoute)
+├── context/         # Global state management untuk Auth, Cart, Wishlist & Theme (ShopContext)
 ├── hooks/           # Custom hooks (useDebounce)
-├── pages/           # Halaman utama (Home, ProductDetail, Wishlist, Cart)
-├── services/        # Layanan integrasi REST API terpisah (productService)
+├── pages/           # Halaman utama (Home, ProductDetail, Wishlist, Cart, Login)
+├── services/        # Layanan integrasi REST API terpisah (productService & authService)
+├── tests/           # Unit & integration test aplikasi
+├── utils/           # Fungsi utilitas pendukung
 ├── App.jsx          # Konfigurasi routing utama
-├── index.css        # Styling global dan responsif (Mobile, Tablet, Desktop)
+├── index.css        # Styling global, Dark Mode, dan responsif (Mobile, Tablet, Desktop)
 └── main.jsx         # Entry point aplikasi
+
 
 ---
 
 ## Cara Menjalankan di Lokal
 
-1. Clone repository ini ke komputer Anda:
+1. **Clone repository ini ke komputer Anda:**
    bash
    git clone https://github.com/24k10020-ai/talenavi-product-catalog.git
    cd talenavi-product-catalog
    
-
-2. Install seluruh *dependencies* yang dibutuhkan:
+2. **Install seluruh *dependencies* yang dibutuhkan:**
    bash
    npm install
 
-3. Jalankan server pengembangan lokal:
+3. **Jalankan server pengembangan lokal:**
    bash
    npm run dev
 
-4. Buka browser dan akses alamat **`http://localhost:5173/`**.
+4. **Buka browser dan akses alamat:**
+   `http://localhost:5173/`
+
+5. **Menjalankan pengujian (opsional):**
+   bash
+   npm test
+
+---
+
+## Akun Demo Login (Untuk Akses Halaman Cart)
+
+- **Akun Demo Lokal:** Username `juwan` | Password `juwanpass`
+- **Akun Resmi DummyJSON API:** Username `emilys` | Password `emilyspass` (atau `michaelw` / `michaelwpass`)
 
 ---
 
 ## Tampilan Aplikasi (Desktop & Mobile)
 
-| Tampilan Desktop ($\ge 1280\text{px}$) | Tampilan Mobile ($\ge 360\text{px}$) |
+| Tampilan Desktop (≥ 1280px) | Tampilan Mobile (≥ 360px) |
 | :---: | :---: |
-| ![Desktop View](public/screenshots/desktop.png) | ![Mobile View](public/screenshots/mobile.png) |
+| ![Desktop View](public/screenshots/desktop.png) | <img src="public/screenshots/mobile.png" alt="Mobile View" width="300" /> |
