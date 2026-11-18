@@ -1387,8 +1387,8 @@ p {
 [data-theme="dark"] .nav-login-link,
 [data-theme="dark"] .input-with-icon,
 [data-theme="dark"] .page-btn {
-  background-color: #121212;
-  border-color: #262626;
+  background-color: #000000;
+  border-color: #000000;
   color: #000000;
 }
 
