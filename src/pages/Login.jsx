@@ -5,8 +5,8 @@ import { authService } from "../services/productService";
 import { useShop } from "../context/ShopContext";
 
 function Login() {
-  const [username, setUsername] = useState("emilys");
-  const [password, setPassword] = useState("emilyspass");
+  const [username, setUsername] = useState("juwan");
+  const [password, setPassword] = useState("juwanpass");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,6 +21,21 @@ function Login() {
     setError("");
 
     try {
+      // Akun demo lokal agar login menggunakan "juwan" berjalan lancar
+      if (username.trim().toLowerCase() === "juwan" && password === "juwanpass") {
+        login({
+          id: 999,
+          username: "juwan",
+          firstName: "Juwan",
+          lastName: "Demo",
+          email: "juwan@talenavi.com",
+          accessToken: "demo-token-juwan",
+        });
+        navigate(redirectPath, { replace: true });
+        return;
+      }
+
+      // Verifikasi ke DummyJSON API untuk akun resmi lainnya (emilys, michaelw, dll.)
       const userData = await authService.login({ username, password });
       login(userData);
       navigate(redirectPath, { replace: true });
@@ -81,7 +96,7 @@ function Login() {
         </form>
 
         <div className="login-demo-hint">
-          <span>Akun Demo DummyJSON:</span>
+          <span>Akun Demo (atau emilys / emilyspass):</span>
           <button
             type="button"
             className="demo-fill-btn"
