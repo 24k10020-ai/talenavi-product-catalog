@@ -1347,7 +1347,7 @@ p {
 [data-theme="dark"] .state-box {
   background-color: #121212;
   border-color: #262626;
-  color: #f5f5f5;
+  color: #000000;
 }
 
 /* Pastikan seluruh judul halaman, nama produk, harga, dan rating berwarna putih */
@@ -1366,7 +1366,7 @@ p {
 [data-theme="dark"] .price,
 [data-theme="dark"] .product-rating,
 [data-theme="dark"] .rating {
-  color: #000000;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .nav-links a {
@@ -1413,5 +1413,5 @@ p {
 [data-theme="dark"] p,
 [data-theme="dark"] .product-category,
 [data-theme="dark"] .login-header p {
-  color: #000000;
+  color: ##000000;
 }
