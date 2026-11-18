@@ -1387,9 +1387,9 @@ p {
 [data-theme="dark"] .nav-login-link,
 [data-theme="dark"] .input-with-icon,
 [data-theme="dark"] .page-btn {
-  background-color: #000000;
-  border-color: #000000;
-  color: #000000;
+  background-color: #121212;
+  border-color: #262626;
+  color: #f5f5f5;
 }
 
 [data-theme="dark"] .category-chip:hover,
@@ -1413,5 +1413,5 @@ p {
 [data-theme="dark"] p,
 [data-theme="dark"] .product-category,
 [data-theme="dark"] .login-header p {
-  color: #000000;
+  color: #ffffff;
 }
