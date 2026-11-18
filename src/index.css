@@ -1227,3 +1227,62 @@ a {
   border-color: #0095f6;
   color: #ffffff;
 }
+
+/* ===== TOMBOL ADD TO CART (BIRU + TEKS & IKON PUTIH) ===== */
+.product-card button:not([class*="wish"]),
+.add-to-cart-btn,
+.add-cart-btn,
+.card-cart-btn,
+.cart-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #2563eb;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.product-card button:not([class*="wish"]) svg,
+.add-to-cart-btn svg,
+.add-cart-btn svg,
+.card-cart-btn svg,
+.cart-btn svg {
+  color: #ffffff;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.product-card button:not([class*="wish"]):hover:not(:disabled),
+.add-to-cart-btn:hover:not(:disabled),
+.add-cart-btn:hover:not(:disabled),
+.card-cart-btn:hover:not(:disabled),
+.cart-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+[data-theme="dark"] .product-card button:not([class*="wish"]),
+[data-theme="dark"] .add-to-cart-btn,
+[data-theme="dark"] .add-cart-btn,
+[data-theme="dark"] .card-cart-btn,
+[data-theme="dark"] .cart-btn {
+  background-color: #0095f6;
+  border-color: #0095f6;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .product-card button:not([class*="wish"]):hover:not(:disabled),
+[data-theme="dark"] .add-to-cart-btn:hover:not(:disabled),
+[data-theme="dark"] .add-cart-btn:hover:not(:disabled),
+[data-theme="dark"] .card-cart-btn:hover:not(:disabled),
+[data-theme="dark"] .cart-btn:hover:not(:disabled) {
+  background-color: #1877f2;
+  border-color: #1877f2;
+}
