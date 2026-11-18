@@ -40,7 +40,7 @@ src/
 
 1. Clone repository ini ke komputer Anda:
    bash
-   git clone [https://github.com/24k10020-ai/talenavi-product-catalog.git](https://github.com/24k10020-ai/talenavi-product-catalog.git)
+   git clone https://github.com/24k10020-ai/talenavi-product-catalog.git
    cd talenavi-product-catalog
    
 2. Install seluruh *dependencies* yang dibutuhkan:
