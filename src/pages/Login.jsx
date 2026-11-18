@@ -86,11 +86,11 @@ function Login() {
             type="button"
             className="demo-fill-btn"
             onClick={() => {
-              setUsername("emilys");
-              setPassword("emilyspass");
+              setUsername("juwan");
+              setPassword("juwanpass");
             }}
           >
-            Isi Otomatis (emilys / emilyspass)
+            Isi Otomatis (juwan / juwanpass)
           </button>
         </div>
       </div>
