@@ -71,62 +71,80 @@ function Cart() {
         <div className="cart-layout">
           {/* Daftar Item */}
           <div className="cart-items">
-            {cart.map((item) => (
-              <div key={item.id} className="cart-item">
-                <Link to={`/products/${item.id}`} className="cart-item-image">
-                  <img src={item.thumbnail} alt={item.title} />
-                </Link>
+            {cart.map((item) => {
+              const hasStockLimit = typeof item.stock === "number";
+              const isMaxStock = hasStockLimit && item.quantity >= item.stock;
 
-                <div className="cart-item-info">
-                  <Link
-                    to={`/products/${item.id}`}
-                    className="cart-item-title"
-                  >
-                    {item.title}
+              return (
+                <div key={item.id} className="cart-item">
+                  <Link to={`/products/${item.id}`} className="cart-item-image">
+                    <img src={item.thumbnail} alt={item.title} />
                   </Link>
-                  <span className="cart-item-unit">
-                    ${item.price.toFixed(2)} / item
-                  </span>
 
-                  <div className="cart-item-actions">
-                    <div className="qty-control">
+                  <div className="cart-item-info">
+                    <Link
+                      to={`/products/${item.id}`}
+                      className="cart-item-title"
+                    >
+                      {item.title}
+                    </Link>
+                    <span className="cart-item-unit">
+                      ${item.price.toFixed(2)} / item
+                      {hasStockLimit && ` • Stok tersedia: ${item.stock}`}
+                    </span>
+
+                    <div className="cart-item-actions">
+                      <div className="qty-control">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateCartQuantity(item.id, item.quantity - 1)
+                          }
+                          aria-label="Kurangi jumlah"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateCartQuantity(item.id, item.quantity + 1)
+                          }
+                          disabled={isMaxStock}
+                          title={
+                            isMaxStock
+                              ? "Jumlah sudah mencapai batas stok"
+                              : "Tambah jumlah"
+                          }
+                          aria-label="Tambah jumlah"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+
                       <button
                         type="button"
-                        onClick={() =>
-                          updateCartQuantity(item.id, item.quantity - 1)
-                        }
-                        aria-label="Kurangi jumlah"
+                        className="remove-item-btn"
+                        onClick={() => removeFromCart(item.id)}
+                        aria-label="Hapus item"
                       >
-                        <Minus size={14} />
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateCartQuantity(item.id, item.quantity + 1)
-                        }
-                        aria-label="Tambah jumlah"
-                      >
-                        <Plus size={14} />
+                        <Trash2 size={17} />
                       </button>
                     </div>
 
-                    <button
-                      type="button"
-                      className="remove-item-btn"
-                      onClick={() => removeFromCart(item.id)}
-                      aria-label="Hapus item"
-                    >
-                      <Trash2 size={17} />
-                    </button>
+                    {isMaxStock && (
+                      <small style={{ color: "#d97706", fontSize: "0.78rem" }}>
+                        Batas maksimal stok tercapai
+                      </small>
+                    )}
+                  </div>
+
+                  <div className="cart-item-total">
+                    ${(item.price * item.quantity).toFixed(2)}
                   </div>
                 </div>
-
-                <div className="cart-item-total">
-                  ${(item.price * item.quantity).toFixed(2)}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Ringkasan Belanja */}

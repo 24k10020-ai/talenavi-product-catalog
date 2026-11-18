@@ -22,6 +22,7 @@ function ProductDetail() {
   const [added, setAdded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -47,7 +48,7 @@ function ProductDetail() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, retryCount]);
 
   if (loading) {
     return (
@@ -65,17 +66,28 @@ function ProductDetail() {
       <div className="container">
         <div className="state-box">
           <p className="error-text">{error || "Produk tidak ditemukan."}</p>
-          <Link to="/" className="primary-btn" style={{ textDecoration: "none" }}>
-            Kembali ke Katalog
-          </Link>
+          <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className="primary-btn"
+              onClick={() => setRetryCount((prev) => prev + 1)}
+            >
+              Coba Lagi
+            </button>
+            <Link to="/" className="back-link" style={{ marginBottom: 0 }}>
+              Kembali ke Katalog
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   const wishlisted = isInWishlist(product.id);
+  const availableStock = product.stock ?? 0;
 
   const handleAddToCart = () => {
+    if (availableStock === 0) return;
     addToCart(product, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
@@ -130,7 +142,7 @@ function ProductDetail() {
               <span>{product.rating?.toFixed(1)}</span>
             </div>
             <span className="stock-badge">
-              {product.stock > 0 ? `Stok: ${product.stock}` : "Stok Habis"}
+              {availableStock > 0 ? `Stok: ${availableStock}` : "Stok Habis"}
             </span>
           </div>
 
@@ -150,16 +162,18 @@ function ProductDetail() {
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={availableStock === 0 || quantity <= 1}
                 aria-label="Kurangi jumlah"
               >
                 <Minus size={16} />
               </button>
-              <span>{quantity}</span>
+              <span>{availableStock === 0 ? 0 : quantity}</span>
               <button
                 type="button"
                 onClick={() =>
-                  setQuantity((q) => Math.min(product.stock || 99, q + 1))
+                  setQuantity((q) => Math.min(availableStock, q + 1))
                 }
+                disabled={availableStock === 0 || quantity >= availableStock}
                 aria-label="Tambah jumlah"
               >
                 <Plus size={16} />
@@ -170,7 +184,7 @@ function ProductDetail() {
               type="button"
               className={`primary-btn detail-cart-btn ${added ? "added" : ""}`}
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              disabled={availableStock === 0}
             >
               {added ? (
                 <>
@@ -196,6 +210,45 @@ function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* Daftar Ulasan Pelanggan (Reviews) */}
+      <section className="reviews-section">
+        <h2 className="reviews-title">
+          Customer Reviews ({product.reviews?.length || 0})
+        </h2>
+
+        {product.reviews && product.reviews.length > 0 ? (
+          <div className="reviews-list">
+            {product.reviews.map((review, index) => (
+              <div key={index} className="review-card">
+                <div className="review-header">
+                  <div>
+                    <strong className="reviewer-name">
+                      {review.reviewerName}
+                    </strong>
+                    {review.date && (
+                      <span className="review-date">
+                        {new Date(review.date).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="review-rating">
+                    <Star size={15} fill="#f59e0b" color="#f59e0b" />
+                    <span>{review.rating} / 5</span>
+                  </div>
+                </div>
+                <p className="review-comment">{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="review-empty">Belum ada ulasan untuk produk ini.</p>
+        )}
+      </section>
     </div>
   );
 }

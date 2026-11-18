@@ -12,12 +12,15 @@ function Home() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   // Ambil daftar kategori saat halaman pertama kali dibuka
   useEffect(() => {
@@ -35,13 +38,14 @@ function Home() {
     };
   }, []);
 
-  // Ambil daftar produk setiap kali halaman, pencarian, atau kategori berubah
+  // Ambil daftar produk setiap kali halaman, pencarian, kategori, sorting, atau retry berubah
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
     setError(null);
 
     const skip = (currentPage - 1) * ITEMS_PER_PAGE;
+    const [sortBy, order] = sortOption ? sortOption.split("-") : ["", "asc"];
 
     productService
       .getProducts({
@@ -49,6 +53,8 @@ function Home() {
         skip,
         search: debouncedSearch,
         category: selectedCategory,
+        sortBy,
+        order,
       })
       .then((data) => {
         if (!isMounted) return;
@@ -66,7 +72,7 @@ function Home() {
     return () => {
       isMounted = false;
     };
-  }, [currentPage, debouncedSearch, selectedCategory]);
+  }, [currentPage, debouncedSearch, selectedCategory, sortOption, retryCount]);
 
   const handleSearchChange = (value) => {
     setSearchQuery(value);
@@ -82,11 +88,18 @@ function Home() {
       setSearchQuery("");
     }
     setCurrentPage(1);
+    setShowMobileFilter(false);
+  };
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleResetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("all");
+    setSortOption("");
     setCurrentPage(1);
   };
 
@@ -104,11 +117,34 @@ function Home() {
           </p>
         </div>
 
-        <SearchBar value={searchQuery} onChange={handleSearchChange} />
+        <div className="catalog-controls">
+          <SearchBar value={searchQuery} onChange={handleSearchChange} />
+
+          <select
+            className="sort-select"
+            value={sortOption}
+            onChange={handleSortChange}
+            aria-label="Urutkan produk"
+          >
+            <option value="">Urutkan: Default</option>
+            <option value="price-asc">Harga: Terendah ke Tertinggi</option>
+            <option value="price-desc">Harga: Tertinggi ke Terendah</option>
+            <option value="rating-desc">Rating: Tertinggi</option>
+            <option value="rating-asc">Rating: Terendah</option>
+          </select>
+
+          <button
+            type="button"
+            className="mobile-filter-btn"
+            onClick={() => setShowMobileFilter((prev) => !prev)}
+          >
+            {showMobileFilter ? "Tutup Kategori" : "Filter Kategori"}
+          </button>
+        </div>
       </div>
 
       {/* Filter Kategori */}
-      <div className="category-bar">
+      <div className={`category-bar ${showMobileFilter ? "open" : ""}`}>
         <button
           type="button"
           className={`category-chip ${selectedCategory === "all" ? "active" : ""}`}
@@ -140,7 +176,7 @@ function Home() {
           <button
             type="button"
             className="primary-btn"
-            onClick={() => setCurrentPage((prev) => prev)}
+            onClick={() => setRetryCount((prev) => prev + 1)}
           >
             Coba Lagi
           </button>

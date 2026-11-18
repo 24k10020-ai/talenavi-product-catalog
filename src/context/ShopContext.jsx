@@ -4,13 +4,21 @@ const ShopContext = createContext();
 
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem("talenavi_cart");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("talenavi_cart");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   const [wishlist, setWishlist] = useState(() => {
-    const saved = localStorage.getItem("talenavi_wishlist");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("talenavi_wishlist");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   useEffect(() => {
@@ -21,31 +29,37 @@ export function ShopProvider({ children }) {
     localStorage.setItem("talenavi_wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
-  // Tambah produk ke keranjang
+  // Tambah produk ke keranjang dengan validasi batas stok dari API
   const addToCart = (product, quantity = 1) => {
+    const maxStock = product.stock ?? 0;
+    if (maxStock <= 0) return;
+
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
+        const nextQty = Math.min(maxStock, existing.quantity + quantity);
         return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+          item.id === product.id ? { ...item, quantity: nextQty } : item
         );
       }
-      return [...prev, { ...product, quantity }];
+      const initialQty = Math.min(maxStock, Math.max(1, quantity));
+      return [...prev, { ...product, quantity: initialQty }];
     });
   };
 
-  // Ubah jumlah item di keranjang
+  // Ubah jumlah item di keranjang tanpa melebihi stok tersedia
   const updateCartQuantity = (productId, newQuantity) => {
     if (newQuantity <= 0) {
       removeFromCart(productId);
       return;
     }
     setCart((prev) =>
-      prev.map((item) =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
+      prev.map((item) => {
+        if (item.id !== productId) return item;
+        const maxStock = item.stock ?? newQuantity;
+        const clampedQty = Math.min(maxStock, newQuantity);
+        return { ...item, quantity: clampedQty };
+      })
     );
   };
 
