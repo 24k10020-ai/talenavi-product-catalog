@@ -1389,7 +1389,7 @@ p {
 [data-theme="dark"] .page-btn {
   background-color: #121212;
   border-color: #262626;
-  color: #f5f5f5;
+  color: #000000;
 }
 
 [data-theme="dark"] .category-chip:hover,
