@@ -1413,5 +1413,5 @@ p {
 [data-theme="dark"] p,
 [data-theme="dark"] .product-category,
 [data-theme="dark"] .login-header p {
-  color: #ffffff;
+  color: #000000;
 }
