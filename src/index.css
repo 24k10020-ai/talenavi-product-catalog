@@ -5,20 +5,28 @@
   color: #f5f5f5;
 }
 
+/* Permukaan kartu & kontainer utama */
 [data-theme="dark"] .navbar,
 [data-theme="dark"] .product-card,
+[data-theme="dark"] .product-detail-card,
+[data-theme="dark"] .reviews-section,
 [data-theme="dark"] .login-card,
 [data-theme="dark"] .cart-item,
 [data-theme="dark"] .cart-summary,
-[data-theme="dark"] .detail-card,
-[data-theme="dark"] .review-card,
 [data-theme="dark"] .state-box {
   background-color: #121212;
   border-color: #262626;
   color: #f5f5f5;
 }
 
-/* Pastikan seluruh judul halaman, nama produk, harga, dan rating berwarna putih */
+/* Kartu ulasan di dalam reviews-section dibuat sedikit lebih terang agar kontras */
+[data-theme="dark"] .review-card {
+  background-color: #1a1a1a;
+  border-color: #262626;
+  color: #f5f5f5;
+}
+
+/* Seluruh judul, nama produk, harga, rating, dan nama pengulas berwarna putih */
 [data-theme="dark"] h1,
 [data-theme="dark"] h2,
 [data-theme="dark"] h3,
@@ -31,9 +39,36 @@
 [data-theme="dark"] .product-title,
 [data-theme="dark"] .product-name,
 [data-theme="dark"] .product-price,
-[data-theme="dark"] .price,
+[data-theme="dark"] .detail-title,
+[data-theme="dark"] .detail-price,
+[data-theme="dark"] .reviews-title,
+[data-theme="dark"] .reviewer-name,
 [data-theme="dark"] .product-rating,
 [data-theme="dark"] .rating {
+  color: #ffffff;
+}
+
+/* Teks deskripsi & komentar ulasan */
+[data-theme="dark"] .detail-description,
+[data-theme="dark"] .review-comment {
+  color: #e5e5e5;
+}
+
+/* Teks sekunder & tautan kembali */
+[data-theme="dark"] p,
+[data-theme="dark"] .product-category,
+[data-theme="dark"] .detail-brand,
+[data-theme="dark"] .login-header p,
+[data-theme="dark"] .review-date,
+[data-theme="dark"] .review-empty {
+  color: #a8a8a8;
+}
+
+[data-theme="dark"] .back-link {
+  color: #d4d4d4;
+}
+
+[data-theme="dark"] .back-link:hover {
   color: #ffffff;
 }
 
@@ -46,6 +81,7 @@
   border-top-color: #262626;
 }
 
+/* Input, filter, badge, kontrol qty, dan tombol sekunder */
 [data-theme="dark"] .search-input,
 [data-theme="dark"] .sort-select,
 [data-theme="dark"] .category-chip,
@@ -54,10 +90,39 @@
 [data-theme="dark"] .nav-auth-btn,
 [data-theme="dark"] .nav-login-link,
 [data-theme="dark"] .input-with-icon,
-[data-theme="dark"] .page-btn {
-  background-color: #121212;
-  border-color: #262626;
+[data-theme="dark"] .page-btn,
+[data-theme="dark"] .qty-control,
+[data-theme="dark"] .detail-wish-btn,
+[data-theme="dark"] .thumb-btn,
+[data-theme="dark"] .stock-badge,
+[data-theme="dark"] .review-rating {
+  background-color: #1a1a1a;
+  border-color: #2e2e2e;
   color: #f5f5f5;
+}
+
+[data-theme="dark"] .qty-control button,
+[data-theme="dark"] .qty-control span {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .qty-control button:disabled {
+  color: #525252;
+}
+
+[data-theme="dark"] .discount-badge {
+  background-color: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+}
+
+[data-theme="dark"] .thumb-btn.active {
+  border-color: #0095f6;
+}
+
+[data-theme="dark"] .detail-wish-btn.active {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.12);
 }
 
 [data-theme="dark"] .category-chip:hover,
@@ -65,21 +130,19 @@
 [data-theme="dark"] .hamburger-btn:hover,
 [data-theme="dark"] .nav-auth-btn:hover,
 [data-theme="dark"] .nav-login-link:hover,
-[data-theme="dark"] .page-btn:hover {
+[data-theme="dark"] .page-btn:hover,
+[data-theme="dark"] .detail-wish-btn:hover,
+[data-theme="dark"] .qty-control button:hover:not(:disabled) {
   background-color: #262626;
 }
 
+/* Tombol aksi utama */
 [data-theme="dark"] .category-chip.active,
 [data-theme="dark"] .page-btn.active,
 [data-theme="dark"] .primary-btn,
-[data-theme="dark"] .add-to-cart-btn {
+[data-theme="dark"] .add-to-cart-btn,
+[data-theme="dark"] .detail-cart-btn {
   background-color: #0095f6;
   border-color: #0095f6;
   color: #ffffff;
-}
-
-[data-theme="dark"] p,
-[data-theme="dark"] .product-category,
-[data-theme="dark"] .login-header p {
-  color: #a8a8a8;
 }
