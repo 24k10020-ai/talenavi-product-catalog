@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { productService } from "../services/productService";
 import { useDebounce } from "../hooks/useDebounce";
 import SearchBar from "../components/SearchBar";
@@ -8,39 +9,63 @@ import Pagination from "../components/Pagination";
 const ITEMS_PER_PAGE = 12;
 
 function Home() {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Baca filter, pencarian, sorting, dan halaman langsung dari URL Query Params
+  const urlQuery = searchParams.get("q") || "";
+  const selectedCategory = searchParams.get("category") || "all";
+  const sortOption = searchParams.get("sort") || "";
+  const currentPage = Math.max(1, Number(searchParams.get("page")) || 1);
+
+  const [searchQuery, setSearchQuery] = useState(urlQuery);
   const debouncedSearch = useDebounce(searchQuery, 400);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
 
+  // Sinkronkan input pencarian jika pengguna menekan tombol Back/Forward browser
+  useEffect(() => {
+    setSearchQuery(urlQuery);
+  }, [urlQuery]);
+
+  // Simpan kata kunci pencarian yang sudah di-debounce ke URL query params
+  useEffect(() => {
+    if (debouncedSearch === urlQuery) return;
+
+    const nextParams = new URLSearchParams(searchParams);
+    if (debouncedSearch.trim()) {
+      nextParams.set("q", debouncedSearch.trim());
+      nextParams.delete("category");
+    } else {
+      nextParams.delete("q");
+    }
+    nextParams.delete("page");
+    setSearchParams(nextParams, { replace: true });
+  }, [debouncedSearch, urlQuery, searchParams, setSearchParams]);
+
   // Ambil daftar kategori saat halaman pertama kali dibuka
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     productService
-      .getCategories()
-      .then((data) => {
-        if (isMounted) setCategories(data);
-      })
-      .catch(() => {
-        // Biarkan daftar kategori kosong jika gagal memuat
+      .getCategories({ signal: controller.signal })
+      .then((data) => setCategories(data))
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setCategories([]);
+        }
       });
-    return () => {
-      isMounted = false;
-    };
+
+    return () => controller.abort();
   }, []);
 
-  // Ambil daftar produk setiap kali halaman, pencarian, kategori, sorting, atau retry berubah
+  // Ambil daftar produk dengan pembatalan request lama (AbortController)
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
 
@@ -51,56 +76,70 @@ function Home() {
       .getProducts({
         limit: ITEMS_PER_PAGE,
         skip,
-        search: debouncedSearch,
+        search: urlQuery,
         category: selectedCategory,
         sortBy,
         order,
+        signal: controller.signal,
       })
       .then((data) => {
-        if (!isMounted) return;
         setProducts(data.products || []);
         setTotalProducts(data.total || 0);
+        setLoading(false);
       })
       .catch((err) => {
-        if (!isMounted) return;
+        if (err.name === "AbortError") return;
         setError(err.message || "Terjadi kesalahan saat memuat produk.");
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       });
 
-    return () => {
-      isMounted = false;
-    };
-  }, [currentPage, debouncedSearch, selectedCategory, sortOption, retryCount]);
+    return () => controller.abort();
+  }, [currentPage, urlQuery, selectedCategory, sortOption, retryCount]);
 
   const handleSearchChange = (value) => {
     setSearchQuery(value);
-    if (value.trim() && selectedCategory !== "all") {
-      setSelectedCategory("all");
-    }
-    setCurrentPage(1);
   };
 
   const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    if (searchQuery) {
-      setSearchQuery("");
+    setSearchQuery("");
+    const nextParams = new URLSearchParams(searchParams);
+    if (category && category !== "all") {
+      nextParams.set("category", category);
+    } else {
+      nextParams.delete("category");
     }
-    setCurrentPage(1);
+    nextParams.delete("q");
+    nextParams.delete("page");
+    setSearchParams(nextParams);
     setShowMobileFilter(false);
   };
 
   const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setCurrentPage(1);
+    const nextSort = e.target.value;
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextSort) {
+      nextParams.set("sort", nextSort);
+    } else {
+      nextParams.delete("sort");
+    }
+    nextParams.delete("page");
+    setSearchParams(nextParams);
+  };
+
+  const handlePageChange = (page) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (page > 1) {
+      nextParams.set("page", String(page));
+    } else {
+      nextParams.delete("page");
+    }
+    setSearchParams(nextParams);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleResetFilters = () => {
     setSearchQuery("");
-    setSelectedCategory("all");
-    setSortOption("");
-    setCurrentPage(1);
+    setSearchParams({});
   };
 
   const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
@@ -143,7 +182,6 @@ function Home() {
         </div>
       </div>
 
-      {/* Filter Kategori */}
       <div className={`category-bar ${showMobileFilter ? "open" : ""}`}>
         <button
           type="button"
@@ -164,7 +202,6 @@ function Home() {
         ))}
       </div>
 
-      {/* Konten Utama */}
       {loading ? (
         <div className="state-box">
           <div className="spinner" />
@@ -203,7 +240,7 @@ function Home() {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
           />
         </>
       )}
